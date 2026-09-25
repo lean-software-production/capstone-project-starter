@@ -5,7 +5,9 @@
   "features": {
     "ghcr.io/lean-software-production/devcontainer-features/pi:1": {},
     "ghcr.io/lean-software-production/devcontainer-features/claude-code:1": {},
-    "ghcr.io/lean-software-production/devcontainer-features/codex:1": {}
+    "ghcr.io/lean-software-production/devcontainer-features/codex:1": {
+      "model": "gpt-6-sol"
+    }
   },
   "postCreateCommand": "bin/doctor || true"
 }

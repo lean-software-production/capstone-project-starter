@@ -32,6 +32,7 @@ requires the tools and at least one configured agent; `--agent pi`,
 contents or make a model request. For Pi, it uses `pi auth check --no-refresh`
 against a saved/uniquely identifiable provider; ambiguous Pi configuration is
 reported as unknown rather than ready. Once it reports ready, start Pi with `pi`,
-Claude Code with `claude`, or Codex with `codex`.
+Claude Code with `claude`, or Codex with `codex`. Codex defaults to `gpt-6-sol`;
+change it with `/model` or in `~/.codex/config.toml`.
 
 Run `tests/doctor_test.sh` to exercise `bin/doctor` against fake agent CLIs.
