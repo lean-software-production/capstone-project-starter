@@ -11,7 +11,7 @@ trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "https://codeload.github.com/lean-software-production/tutorial/tar.gz/$ref" \
   | tar -xz -C "$tmp" --strip-components=1
 
-# Ledger rows look like: | 001 | [Title](001-folder/README.md) | Day 1 |
+# Ledger rows look like: | 001 | [Title](001-folder/README.md) |
 ledger=$(grep -oE '^\| [0-9]{3} \| \[[^]]*\]\([^/]+/' "$tmp/docs/iterations/README.md" \
   | sed -E 's/^\| ([0-9]{3}) .*\(([^/]+)\/$/\1 \2/')
 

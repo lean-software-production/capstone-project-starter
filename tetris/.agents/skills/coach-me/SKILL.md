@@ -15,7 +15,7 @@ You work from `tetris/.factory`. All paths below are relative to it.
 - `ITERATION` — their progress: one line, the iteration and its status, e.g. `001 WIP`.
 - `../seeds/` — the seeds the factory builds from.
 - `stand-ins/` — stand-in agents for quick, repeatable checks.
-- **The target** — `..`, the `tetris/` folder. The factory builds the game there. You don't.
+- **The codebase** — `..`, the `tetris/` folder. The factory builds the game there. You don't.
 
 ## Coaching
 

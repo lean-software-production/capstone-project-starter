@@ -4,7 +4,7 @@ description: Implement the student's current homework iteration yourself, withou
 ---
 Implement the current homework iteration.
 
-Work from `tetris/.factory`. The spec is in `spec/`, the student's progress in `ITERATION`, and the seeds in `../seeds/`. The target, where the factory builds the game, is `..`.
+Work from `tetris/.factory`. The spec is in `spec/`, the student's progress in `ITERATION`, and the seeds in `../seeds/`. The codebase the factory builds the game in is `..`.
 
 Follow this process exactly:
 

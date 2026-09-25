@@ -6,7 +6,7 @@ Implement the current homework iteration, then explain and demo what changed bef
 
 This is guided autopilot. Do the implementation yourself, but walk the student through the build one iteration at a time. After each iteration, show what was learned, what changed, how to try it, and what's still missing.
 
-Work from `tetris/.factory`. The spec is in `spec/`, the student's progress in `ITERATION`, and the seeds in `../seeds/`. The target, where the factory builds the game, is `..`.
+Work from `tetris/.factory`. The spec is in `spec/`, the student's progress in `ITERATION`, and the seeds in `../seeds/`. The codebase the factory builds the game in is `..`.
 
 Follow this process exactly:
 
