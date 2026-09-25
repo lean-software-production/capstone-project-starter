@@ -2,13 +2,6 @@
   "name": "Capstone Project Starter",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:5-24-trixie",
   "remoteUser": "node",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "openai.chatgpt"
-      ]
-    }
-  },
   "features": {
     "ghcr.io/lean-software-production/devcontainer-features/pi:1": {},
     "ghcr.io/lean-software-production/devcontainer-features/claude-code:1": {},

@@ -8,9 +8,10 @@ Container users. It provides Node.js plus Pi, Claude Code, and Codex (installed
 from the [lean-software-production devcontainer features](https://github.com/lean-software-production/devcontainer-features)).
 Open the repository in a container, then authenticate the agent you want to use
 as the non-root `node` user—credentials are not included in the image or
-repository. The Dev Container also installs the optional Codex VS Code extension
-in the remote extension host; the `codex` terminal workflow remains fully
-supported.
+repository. The Codex VS Code extension is deliberately not preinstalled: it
+depends on the UI-only Codex Audio extension, which cannot run in browser-based
+Codespaces. Use the `codex` terminal CLI, or install the extension yourself
+from desktop VS Code.
 
 ```sh
 # Pick one. Codespaces users can use the device-code flow when browser callback
