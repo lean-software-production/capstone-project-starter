@@ -1,0 +1,238 @@
+#!/usr/bin/env bash
+# Diagnose the dev environment without reading credentials or contacting models.
+set -u
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+agent="all"
+agent_explicit=0
+case "${1-}" in
+  "") ;;
+  --agent)
+    if [[ $# -ne 2 ]]; then
+      printf 'FAIL: --agent needs one of: pi, claude, codex, all\n' >&2
+      exit 2
+    fi
+    agent="$2"
+    agent_explicit=1
+    ;;
+  --help|-h)
+    cat <<'EOF'
+Usage: bin/doctor [--agent pi|claude|codex|all]
+
+Checks local tools and installed agent CLIs without sending a model request.
+With no option, all agent CLIs must be installed and at least one must be
+configured. Selecting an agent requires that agent to be configured; `all`
+requires every agent to be configured.
+EOF
+    exit 0
+    ;;
+  *)
+    printf 'FAIL: unknown argument: %s\nTry: bin/doctor --help\n' "$1" >&2
+    exit 2
+    ;;
+esac
+
+case "$agent" in pi|claude|codex|all) ;; *)
+  printf 'FAIL: unknown agent: %s\nUse pi, claude, codex, or all.\n' "$agent" >&2
+  exit 2
+  ;;
+esac
+
+if [[ -t 1 && -z "${NO_COLOR-}" ]]; then
+  green=$'\033[32m'; yellow=$'\033[33m'; red=$'\033[31m'; reset=$'\033[0m'
+else
+  green=''; yellow=''; red=''; reset=''
+fi
+
+pass() { printf '%sPASS%s %s\n' "$green" "$reset" "$*"; }
+warn() { printf '%sWARN%s %s\n' "$yellow" "$reset" "$*"; }
+fail() { printf '%sFAIL%s %s\n' "$red" "$reset" "$*"; }
+
+base_ok=1
+agents_installed=1
+configured_count=0
+pi_configured=0
+claude_configured=0
+codex_configured=0
+
+check_tool() {
+  local tool="$1" version
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    fail "$tool is not on PATH"
+    base_ok=0
+    return
+  fi
+  version=$("$tool" --version 2>/dev/null | { IFS= read -r line || true; printf '%s' "${line-unknown version}"; })
+  pass "$tool: ${version:-unknown version}"
+}
+
+printf 'Environment diagnostics (read-only; no model request)\n'
+check_tool bash
+check_tool git
+check_tool node
+check_tool npm
+
+check_pi() {
+  if ! command -v pi >/dev/null 2>&1; then
+    fail 'Pi is not on PATH (rebuild the Dev Container).'
+    agents_installed=0
+    return
+  fi
+  pass "Pi: $(pi --version 2>/dev/null | { IFS= read -r line || true; printf '%s' "${line-unknown version}"; })"
+
+  # Only provider IDs and default-selection fields leave this Node process;
+  # credential values in auth.json are never printed or passed to this script.
+  local default_provider='' default_model='' stored_provider='' stored_count=0
+  local metadata key value
+  while IFS=$'\t' read -r key value; do
+    case "$key" in
+      default_provider) default_provider="$value" ;;
+      default_model) default_model="$value" ;;
+      stored_provider) stored_provider="$value"; stored_count=$((stored_count + 1)) ;;
+    esac
+  done < <(node - "${HOME}/.pi/agent/settings.json" "${repo_root}/.pi/settings.json" "${HOME}/.pi/agent/auth.json" <<'NODE'
+const fs = require("fs");
+const valid = (value) => typeof value === "string" && /^[A-Za-z0-9._/-]+$/.test(value);
+const readJson = (path) => {
+  try { return JSON.parse(fs.readFileSync(path, "utf8")); } catch { return undefined; }
+};
+let settings = {};
+for (const path of process.argv.slice(2, 4)) {
+  const parsed = readJson(path);
+  if (parsed && typeof parsed === "object") {
+    for (const key of ["defaultProvider", "defaultModel"]) {
+      if (typeof parsed[key] === "string") settings[key] = parsed[key];
+    }
+  }
+}
+if (valid(settings.defaultProvider)) console.log(`default_provider\t${settings.defaultProvider}`);
+if (valid(settings.defaultModel)) console.log(`default_model\t${settings.defaultModel}`);
+const auth = readJson(process.argv[4]);
+if (auth && typeof auth === "object" && !Array.isArray(auth)) {
+  for (const provider of Object.keys(auth).sort()) {
+    if (valid(provider)) console.log(`stored_provider\t${provider}`);
+  }
+}
+NODE
+)
+
+  if [[ -n "$default_provider" && -n "$default_model" ]]; then
+    pass "Pi default selection: ${default_provider}/${default_model}."
+  elif [[ -n "$default_provider" ]]; then
+    pass "Pi default provider: ${default_provider} (model uses Pi's available/default selection)."
+  elif [[ -n "$default_model" ]]; then
+    warn "Pi default model is ${default_model}, but no default provider is saved."
+  else
+    warn 'Pi has no saved default provider or model; Pi selects from available providers at startup.'
+  fi
+
+  local target_kind='' target='' env_count=0 variable provider variable_provider selected_variable=''
+  if [[ -n "$default_provider" ]]; then
+    target_kind='provider'; target="$default_provider"
+  elif [[ "$default_model" == */* ]]; then
+    target_kind='model'; target="$default_model"
+  else
+    for variable_provider in \
+      'ANTHROPIC_API_KEY:anthropic' 'OPENAI_API_KEY:openai' \
+      'GEMINI_API_KEY:google' 'XAI_API_KEY:xai' 'OPENROUTER_API_KEY:openrouter'; do
+      variable=${variable_provider%%:*}
+      provider=${variable_provider#*:}
+      if [[ -n "${!variable-}" ]]; then
+        target_kind='provider'; target="$provider"; selected_variable="$variable"; env_count=$((env_count + 1))
+      fi
+    done
+    if [[ $env_count -eq 1 ]]; then
+      pass "Pi provider ${target} identified from ${selected_variable} (value not inspected)."
+    elif [[ $env_count -gt 1 ]]; then
+      target_kind=''; target=''
+      warn 'Pi has multiple supported provider-key variables but no default provider.'
+    elif [[ $stored_count -eq 1 ]]; then
+      target_kind='provider'; target="$stored_provider"
+      pass "Pi provider ${target} identified from stored configuration (credential not read)."
+    elif [[ $stored_count -gt 1 ]]; then
+      warn 'Pi has multiple stored providers but no default provider.'
+    fi
+  fi
+
+  if ! pi auth check --help >/dev/null 2>&1; then
+    warn 'Pi does not support native auth checks; update Pi, then run bin/doctor again.'
+  elif [[ -z "$target" ]]; then
+    warn 'Pi readiness is unknown: select a default provider with /model, or configure exactly one provider.'
+  elif [[ "$target_kind" == provider ]] && pi auth check --provider "$target" --json --no-refresh >/dev/null 2>&1; then
+    pass "Pi authentication is ready for provider ${target} (native local check; no refresh)."
+    pi_configured=1
+  elif [[ "$target_kind" == model ]] && pi auth check --model "$target" --json --no-refresh >/dev/null 2>&1; then
+    pass "Pi authentication is ready for model ${target} (native local check; no refresh)."
+    pi_configured=1
+  elif [[ -n "$target" ]]; then
+    warn "Pi authentication is not ready for ${target}; run pi, then /login."
+  fi
+}
+
+check_claude() {
+  if ! command -v claude >/dev/null 2>&1; then
+    fail 'Claude Code is not on PATH (rebuild the Dev Container).'
+    agents_installed=0
+    return
+  fi
+  pass "Claude Code: $(claude --version 2>/dev/null | { IFS= read -r line || true; printf '%s' "${line-unknown version}"; })"
+  if claude auth status >/dev/null 2>&1; then
+    pass 'Claude Code authentication is configured.'
+    claude_configured=1
+  else
+    warn 'Claude Code is not configured. Run: claude auth login'
+  fi
+  warn 'Claude Code model is governed by its settings or upstream default; doctor does not start a session to infer it.'
+}
+
+check_codex() {
+  if ! command -v codex >/dev/null 2>&1; then
+    fail 'Codex is not on PATH (rebuild the Dev Container).'
+    agents_installed=0
+    return
+  fi
+  pass "Codex: $(codex --version 2>/dev/null | { IFS= read -r line || true; printf '%s' "${line-unknown version}"; })"
+  if codex login status >/dev/null 2>&1; then
+    pass 'Codex authentication is configured.'
+    codex_configured=1
+  else
+    warn 'Codex is not configured. Run: codex login --device-auth (or codex login)'
+  fi
+  warn 'Codex effective model is determined by its configuration or upstream default; doctor makes no request to discover it.'
+}
+
+check_pi
+check_claude
+check_codex
+
+configured_count=$((pi_configured + claude_configured + codex_configured))
+if [[ $base_ok -eq 0 || $agents_installed -eq 0 ]]; then
+  fail 'Environment is not ready: install the missing required tools or rebuild the Dev Container.'
+  exit 1
+fi
+
+case "$agent" in
+  pi) required_configured=$pi_configured ;;
+  claude) required_configured=$claude_configured ;;
+  codex) required_configured=$codex_configured ;;
+  all) required_configured=$configured_count ;;
+esac
+
+if [[ "$agent" == all && $agent_explicit -eq 1 && $configured_count -eq 3 ]]; then
+  pass 'Environment is ready: all agents are configured.'
+elif [[ "$agent" == all && $agent_explicit -eq 0 && $configured_count -ge 1 ]]; then
+  pass 'Environment is ready: at least one agent is configured.'
+elif [[ "$agent" == all ]]; then
+  if [[ $agent_explicit -eq 1 ]]; then
+    fail 'Environment is not ready for all agents: configure every agent, then run bin/doctor --agent all.'
+  else
+    fail 'Environment is not ready: configure at least one agent, then run bin/doctor again.'
+  fi
+  exit 1
+elif [[ $required_configured -eq 1 ]]; then
+  pass "Environment is ready for ${agent}."
+else
+  fail "Environment is not ready for ${agent}: complete its login, then run bin/doctor --agent ${agent}."
+  exit 1
+fi
