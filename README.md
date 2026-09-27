@@ -77,12 +77,12 @@ Run `tests/doctor_test.sh` to exercise `bin/doctor` against fake agent CLIs.
 
 ## Take the course with Tutor
 
-There is a second Codespace configuration, **Tutor course**
+There is a second Codespace configuration, **BB tutor**
 (`.devcontainer/tutor/`), for working through the course with a coach. It is
 the same environment plus a private [BB](https://github.com/lean-software-production/devcontainer-features/tree/main/src/bb)
 with the Tutor plugin, which lists the course's lessons and gives each one a
 coach thread. To use it, choose **Code → Codespaces → ⋯ → New with options**
-on your fork, pick **Tutor course**, and open the forwarded **BB (Tutor)** port
+on your fork, pick **BB tutor**, and open the forwarded **BB (Tutor)** port
 once the Codespace is ready. Sign in to an agent there or in a terminal, as
 above.
 
