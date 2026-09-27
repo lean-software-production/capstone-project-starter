@@ -74,3 +74,21 @@ means Codex can run any command, including `git push` with the Codespace's
 GitHub token, without asking.
 
 Run `tests/doctor_test.sh` to exercise `bin/doctor` against fake agent CLIs.
+
+## Take the course with Tutor
+
+There is a second Codespace configuration, **Tutor course**
+(`.devcontainer/tutor/`), for working through the course with a coach. It is
+the same environment plus a private [BB](https://github.com/lean-software-production/devcontainer-features/tree/main/src/bb)
+with the Tutor plugin, which lists the course's lessons and gives each one a
+coach thread. To use it, choose **Code → Codespaces → ⋯ → New with options**
+on your fork, pick **Tutor course**, and open the forwarded **BB (Tutor)** port
+once the Codespace is ready. Sign in to an agent there or in a terminal, as
+above.
+
+Your repository is the BB project. Tutor fetches each lesson into your factory
+as `fetch iteration` does, including the move from `tetris/.factory/` to
+`factory/` at homework 4, so there is nothing to reopen; commit its changes as
+you would after fetching. The tutorial is cloned beside your repository, at
+`/workspaces/tutorial`. The coach can also be reached the usual way, by
+saying "coach me" to an agent in the factory.

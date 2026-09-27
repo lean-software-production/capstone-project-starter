@@ -1,0 +1,75 @@
+{
+  // The same Codespace as ../devcontainer.json, plus a private, loopback-only
+  // BB with the Tutor plugin, which coaches you through the tutorial's
+  // lessons in this repository. Pick "Tutor course" when creating the
+  // Codespace. The tutorial itself is cloned to /workspaces/tutorial.
+  "name": "Tutor course (Capstone Project Starter + BB)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:5-24-trixie",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt@26.5908.31748"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/lean-software-production/devcontainer-features/bb:1": {
+      "version": "0.43.4",
+      "mode": "standalone",
+      "autoStart": true,
+      "serverPort": "38886",
+      "hostDaemonPort": "38887",
+      "dataDir": "/workspaces/.bb-state",
+      "appUrl": "auto"
+    },
+    "ghcr.io/lean-software-production/devcontainer-features/pi:1": {},
+    "ghcr.io/lean-software-production/devcontainer-features/claude-code:1": {},
+    "ghcr.io/lean-software-production/devcontainer-features/codex:1": {
+      "model": "gpt-6-sol",
+      "fullAccess": true
+    },
+    "ghcr.io/lean-software-production/devcontainer-features/tutor:0.6": {
+      // This repository is your BB project; Tutor finds the factory in it
+      // (tetris/.factory, then factory/ from lesson 4) and moves it at
+      // lesson 4 as fetch-iteration does.
+      "starter": "${containerWorkspaceFolder}",
+      "starterRepo": "",
+      "factory": "",
+      "course": "/workspaces/tutorial",
+      "courseRepo": "https://github.com/lean-software-production/tutorial.git",
+      // The newest bb-plugin-tutor release, resolved when the image is built
+      // (a prebuild keeps it until the image is rebuilt).
+      "pluginVersion": "latest",
+      "selectOutline": true
+    }
+  },
+  // tutor builds its plugin with bb's CLI, so it goes after bb.
+  "overrideFeatureInstallOrder": [
+    "ghcr.io/lean-software-production/devcontainer-features/bb",
+    "ghcr.io/lean-software-production/devcontainer-features/pi",
+    "ghcr.io/lean-software-production/devcontainer-features/claude-code",
+    "ghcr.io/lean-software-production/devcontainer-features/codex",
+    "ghcr.io/lean-software-production/devcontainer-features/tutor"
+  ],
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/tools/pi-rpc-acp"
+  },
+  "postCreateCommand": ".devcontainer/tutor/post-create.sh",
+  // GitHub stops an idle Codespace, and using BB through the forwarded port
+  // does not count as activity; this keeps it awake while BB is in use.
+  "postAttachCommand": {
+    "tutor-keepalive": "tutor-keepalive"
+  },
+  "forwardPorts": [38886],
+  "portsAttributes": {
+    "38886": {
+      "label": "BB (Tutor)",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  }
+}
