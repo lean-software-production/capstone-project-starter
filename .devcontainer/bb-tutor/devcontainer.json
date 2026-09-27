@@ -55,7 +55,7 @@
   "remoteEnv": {
     "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/tools/pi-rpc-acp"
   },
-  "postCreateCommand": ".devcontainer/tutor/post-create.sh",
+  "postCreateCommand": ".devcontainer/bb-tutor/post-create.sh",
   // GitHub stops an idle Codespace, and using BB through the forwarded port
   // does not count as activity; this keeps it awake while BB is in use.
   "postAttachCommand": {
