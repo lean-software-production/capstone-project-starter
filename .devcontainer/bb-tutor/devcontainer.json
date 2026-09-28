@@ -29,7 +29,7 @@
       "model": "gpt-6-sol",
       "fullAccess": true
     },
-    "ghcr.io/lean-software-production/devcontainer-features/tutor:0.6": {
+    "ghcr.io/lean-software-production/devcontainer-features/tutor:0.7": {
       // This repository is your BB project; Tutor finds the factory in it
       // (tetris/.factory, then factory/ from lesson 4) and moves it at
       // lesson 4 as fetch-iteration does.
