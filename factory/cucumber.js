@@ -1,6 +1,6 @@
 module.exports = {
   default: {
-    paths: ["spec/features/**/*.feature"],
+    paths: ["spec/features/**/*.feature", "features/regression.feature"],
     requireModule: ["ts-node/register"],
     require: ["features/**/*.ts"],
     tags: "not @real-agent",

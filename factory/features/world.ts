@@ -6,10 +6,14 @@ import { join } from "node:path";
 setDefaultTimeout(15_000);
 
 export interface AgentConfig {
-  answerInProse?: boolean;
-  planInProse?: boolean;
-  prefix?: string;
+  plannerInProse?: boolean;
+  doerInProse?: boolean;
+  validatorInProse?: boolean;
+  invalidLastVerdict?: boolean;
+  validatorPrefix?: string;
   writeSentinel?: boolean;
+  doerNoChanges?: boolean;
+  validation?: "always" | "reject-first" | "never";
 }
 
 export class FactoryWorld extends World {
@@ -23,6 +27,9 @@ export class FactoryWorld extends World {
   callLog = "";
   configPath = "";
   useChosenAgent = true;
+  missingDoer = false;
+  attempts = 3;
+  lens: string | undefined;
   output = "";
   exitCode: number | null = null;
   initialCommitCount = 0;
