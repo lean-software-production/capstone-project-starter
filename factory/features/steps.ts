@@ -122,11 +122,13 @@ Given("a copy of the factory, in a folder of its own inside a new codebase", fun
   this.chosenAgent = join(this.workspace, "chosen-agent");
 
   mkdirSync(join(this.factoryDir, "src"), { recursive: true });
+  mkdirSync(join(this.codebase, "bin"), { recursive: true });
   mkdirSync(this.fakeBin, { recursive: true });
   copyFileSync(resolve("factory"), join(this.factoryDir, "factory"));
   chmodSync(join(this.factoryDir, "factory"), 0o755);
   cpSync(resolve("src"), join(this.factoryDir, "src"), { recursive: true });
   symlinkSync(resolve("node_modules"), join(this.factoryDir, "node_modules"));
+  symlinkSync("../.factory/factory", join(this.codebase, "bin", "factory"));
 
   writeFileSync(this.chosenAgent, agentDouble);
   chmodSync(this.chosenAgent, 0o755);
@@ -204,7 +206,7 @@ function runFactory(world: FactoryWorld, all: boolean): void {
   const args = ["--seed", world.seedPath, "--target", world.codebase];
   if (world.useChosenAgent) args.push("--agent", world.chosenAgent);
   if (all) args.push("--all");
-  const result = spawnSync(join(world.factoryDir, "factory"), args, {
+  const result = spawnSync(join(world.codebase, "bin", "factory"), args, {
     cwd: world.codebase,
     encoding: "utf8",
     env: {
