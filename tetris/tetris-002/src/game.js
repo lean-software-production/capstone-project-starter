@@ -38,10 +38,15 @@ class Game {
   stop() {
     if (!this.running) return;
     this.running = false;
-    if (this.timer !== null) this.cancel(this.timer);
-    this.timer = null;
+    this.cancelTick();
     this.input.stop();
     this.renderer.showCursor();
+  }
+
+  cancelTick() {
+    if (this.timer === null) return;
+    this.cancel(this.timer);
+    this.timer = null;
   }
 
   queueTick() {
@@ -49,6 +54,7 @@ class Game {
     const delay = Math.max(100, 700 - ((this.level - 1) * 60));
     this.timer = this.schedule(() => {
       this.timer = null;
+      if (!this.running || this.gameOver) return;
       this.tick();
       this.queueTick();
     }, delay);
@@ -60,10 +66,15 @@ class Game {
     this.render();
   }
 
+  endGame() {
+    this.gameOver = true;
+    this.cancelTick();
+  }
+
   spawnPiece() {
     const piece = this.pieces.next().centeredIn(this.board.width);
     this.activePiece = piece;
-    if (!this.board.canPlace(piece)) this.gameOver = true;
+    if (!this.board.canPlace(piece)) this.endGame();
   }
 
   move(dx, dy) {
@@ -97,7 +108,7 @@ class Game {
 
   lockPiece() {
     if (this.board.place(this.activePiece)) {
-      this.gameOver = true;
+      this.endGame();
       return;
     }
     const cleared = this.board.clearLines();
@@ -130,6 +141,7 @@ class Game {
     }
     if (action === 'restart') {
       if (this.gameOver) {
+        this.cancelTick();
         this.reset();
         this.render();
         this.queueTick();
