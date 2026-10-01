@@ -11,31 +11,22 @@ class Board {
     this.cells = Array.from({ length: this.height }, () => Array(this.width).fill(null));
   }
 
-  collides(matrix, x, y) {
-    for (let row = 0; row < matrix.length; row += 1) {
-      for (let column = 0; column < matrix[row].length; column += 1) {
-        if (!matrix[row][column]) continue;
-
-        const boardX = x + column;
-        const boardY = y + row;
-        if (boardX < 0 || boardX >= this.width || boardY >= this.height) return true;
-        if (boardY >= 0 && this.cells[boardY][boardX]) return true;
-      }
-    }
-    return false;
+  canPlace(piece) {
+    return piece.occupiedCells().every(({ x, y }) => {
+      if (x < 0 || x >= this.width || y >= this.height) return false;
+      return y < 0 || !this.cells[y][x];
+    });
   }
 
-  lock(piece) {
+  place(piece) {
     let aboveBoard = false;
-    piece.matrix.forEach((row, y) => row.forEach((occupied, x) => {
-      if (!occupied) return;
-      const boardY = piece.y + y;
-      if (boardY < 0) {
+    piece.occupiedCells().forEach(({ x, y, symbol }) => {
+      if (y < 0) {
         aboveBoard = true;
       } else {
-        this.cells[boardY][piece.x + x] = piece.symbol;
+        this.cells[y][x] = symbol;
       }
-    }));
+    });
     return aboveBoard;
   }
 
@@ -51,12 +42,9 @@ class Board {
     const view = this.cells.map((row) => row.slice());
     if (!activePiece) return view;
 
-    activePiece.matrix.forEach((row, y) => row.forEach((occupied, x) => {
-      const boardY = activePiece.y + y;
-      if (occupied && boardY >= 0 && boardY < this.height) {
-        view[boardY][activePiece.x + x] = activePiece.symbol;
-      }
-    }));
+    activePiece.occupiedCells().forEach(({ x, y, symbol }) => {
+      if (y >= 0 && y < this.height) view[y][x] = symbol;
+    });
     return view;
   }
 }

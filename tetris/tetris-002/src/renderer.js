@@ -7,12 +7,11 @@ class TerminalRenderer {
     this.output = output;
   }
 
-  frame(game) {
-    const rows = game.board.snapshot(game.activePiece);
-    const border = `+${'-'.repeat(game.board.width * 2)}+`;
+  frame({ rows, width, score, lines, level, gameOver }) {
+    const border = `+${'-'.repeat(width * 2)}+`;
     const boardRows = rows.map((row) => `|${row.map((cell) => cell ? '[]' : '  ').join('')}|`);
-    const status = `Score ${game.score}  Lines ${game.lines}  Level ${game.level}`;
-    const message = game.gameOver
+    const status = `Score ${score}  Lines ${lines}  Level ${level}`;
+    const message = gameOver
       ? 'GAME OVER - r restart, q quit'
       : 'Arrows/WASD move  W/Up rotate  Space drop  q quit';
     const frame = [border, ...boardRows, border, status, message].join('\n');
@@ -23,8 +22,8 @@ class TerminalRenderer {
     return frame;
   }
 
-  render(game) {
-    this.output.write(`\x1b[2J\x1b[H${this.frame(game)}`);
+  render(snapshot) {
+    this.output.write(`\x1b[2J\x1b[H${this.frame(snapshot)}`);
   }
 
   hideCursor() {

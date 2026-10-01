@@ -24,6 +24,47 @@ function rotateClockwise(matrix) {
   );
 }
 
+class Piece {
+  #symbol;
+  #matrix;
+  #x;
+  #y;
+
+  constructor(symbol, matrix, x = 0, y = 0) {
+    this.#symbol = symbol;
+    this.#matrix = cloneMatrix(matrix);
+    this.#x = x;
+    this.#y = y;
+  }
+
+  centeredIn(width) {
+    return new Piece(
+      this.#symbol,
+      this.#matrix,
+      Math.floor((width - this.#matrix[0].length) / 2),
+      this.#y
+    );
+  }
+
+  moved(dx, dy) {
+    return new Piece(this.#symbol, this.#matrix, this.#x + dx, this.#y + dy);
+  }
+
+  rotated() {
+    return new Piece(this.#symbol, rotateClockwise(this.#matrix), this.#x, this.#y);
+  }
+
+  occupiedCells() {
+    const cells = [];
+    this.#matrix.forEach((row, y) => row.forEach((occupied, x) => {
+      if (occupied) {
+        cells.push({ x: this.#x + x, y: this.#y + y, symbol: this.#symbol });
+      }
+    }));
+    return cells;
+  }
+}
+
 class PieceSource {
   constructor(random = Math.random) {
     this.random = random;
@@ -40,8 +81,8 @@ class PieceSource {
     }
 
     const type = this.bag.pop();
-    return { type, symbol: SYMBOLS[type], matrix: cloneMatrix(SHAPES[type]) };
+    return new Piece(SYMBOLS[type], SHAPES[type]);
   }
 }
 
-module.exports = { PieceSource, rotateClockwise };
+module.exports = { Piece, PieceSource };

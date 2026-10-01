@@ -1,7 +1,5 @@
 'use strict';
 
-const { rotateClockwise } = require('./pieces');
-
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
 class Game {
@@ -33,7 +31,7 @@ class Game {
     this.running = true;
     this.renderer.hideCursor();
     this.input.start((action) => this.handleAction(action));
-    this.renderer.render(this);
+    this.render();
     this.queueTick();
   }
 
@@ -59,39 +57,30 @@ class Game {
   tick() {
     if (this.gameOver) return;
     if (!this.move(0, 1)) this.lockPiece();
-    this.renderer.render(this);
+    this.render();
   }
 
   spawnPiece() {
-    const piece = this.pieces.next();
-    this.activePiece = {
-      ...piece,
-      x: Math.floor((this.board.width - piece.matrix[0].length) / 2),
-      y: 0
-    };
-    if (this.board.collides(this.activePiece.matrix, this.activePiece.x, this.activePiece.y)) {
-      this.gameOver = true;
-    }
+    const piece = this.pieces.next().centeredIn(this.board.width);
+    this.activePiece = piece;
+    if (!this.board.canPlace(piece)) this.gameOver = true;
   }
 
   move(dx, dy) {
     if (this.gameOver) return false;
-    const x = this.activePiece.x + dx;
-    const y = this.activePiece.y + dy;
-    if (this.board.collides(this.activePiece.matrix, x, y)) return false;
-    this.activePiece.x = x;
-    this.activePiece.y = y;
+    const candidate = this.activePiece.moved(dx, dy);
+    if (!this.board.canPlace(candidate)) return false;
+    this.activePiece = candidate;
     return true;
   }
 
   rotate() {
     if (this.gameOver) return false;
-    const rotated = rotateClockwise(this.activePiece.matrix);
+    const rotated = this.activePiece.rotated();
     for (const offset of [0, -1, 1, -2, 2]) {
-      const x = this.activePiece.x + offset;
-      if (!this.board.collides(rotated, x, this.activePiece.y)) {
-        this.activePiece.matrix = rotated;
-        this.activePiece.x = x;
+      const candidate = rotated.moved(offset, 0);
+      if (this.board.canPlace(candidate)) {
+        this.activePiece = candidate;
         return true;
       }
     }
@@ -107,7 +96,7 @@ class Game {
   }
 
   lockPiece() {
-    if (this.board.lock(this.activePiece)) {
+    if (this.board.place(this.activePiece)) {
       this.gameOver = true;
       return;
     }
@@ -116,6 +105,21 @@ class Game {
     this.level = Math.floor(this.lines / 10) + 1;
     this.score += LINE_SCORES[cleared] * this.level;
     this.spawnPiece();
+  }
+
+  displaySnapshot() {
+    return {
+      rows: this.board.snapshot(this.activePiece),
+      width: this.board.width,
+      score: this.score,
+      lines: this.lines,
+      level: this.level,
+      gameOver: this.gameOver
+    };
+  }
+
+  render() {
+    this.renderer.render(this.displaySnapshot());
   }
 
   handleAction(action) {
@@ -127,7 +131,7 @@ class Game {
     if (action === 'restart') {
       if (this.gameOver) {
         this.reset();
-        this.renderer.render(this);
+        this.render();
         this.queueTick();
       }
       return;
@@ -139,7 +143,7 @@ class Game {
     if (action === 'down' && this.move(0, 1)) this.score += 1;
     if (action === 'rotate') this.rotate();
     if (action === 'drop') this.hardDrop();
-    this.renderer.render(this);
+    this.render();
   }
 }
 
