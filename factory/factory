@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+factory_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec "$factory_dir/node_modules/.bin/ts-node" "$factory_dir/src/cli.ts" "$@"
