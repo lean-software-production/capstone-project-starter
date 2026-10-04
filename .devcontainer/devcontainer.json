@@ -19,8 +19,7 @@
     "ghcr.io/lean-software-production/devcontainer-features/bb:1": {
       "version": "0.45.0",
       "mode": "machine",
-      "autoStart": true,
-      "dataDir": "/workspaces/.bb-machine"
+      "autoStart": true
     }
   },
   "remoteEnv": {
