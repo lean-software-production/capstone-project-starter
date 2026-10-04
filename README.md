@@ -89,7 +89,8 @@ sign in your agents.
    `BB_MACHINE_ACCESS_CLIENT_SECRET`, each available to your fork.
 3. Create (or rebuild) your Codespace: see
    [Create a Codespace](#create-a-codespace) above.
-4. In its terminal, sign in to an agent: see
+4. In its terminal, sign in to an agent. For Claude Code, run `claude`
+   in the Codespace's terminal and follow its sign-in. Or see
    [Sign in to the Codex extension](#sign-in-to-the-codex-extension) or
    [Sign in to Pi](#sign-in-to-pi) below.
 5. Open your link and sign in with GitHub.
