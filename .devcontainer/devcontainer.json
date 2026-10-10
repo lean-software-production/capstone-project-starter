@@ -15,6 +15,11 @@
     "ghcr.io/lean-software-production/devcontainer-features/codex:1": {
       "model": "gpt-6-sol",
       "fullAccess": true
+    },
+    "ghcr.io/lean-software-production/devcontainer-features/bb:1": {
+      "version": "0.45.0",
+      "mode": "machine",
+      "autoStart": true
     }
   },
   "remoteEnv": {

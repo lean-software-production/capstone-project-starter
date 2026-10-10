@@ -77,6 +77,26 @@ yet signed in. Those warnings are expected: you sign in next.
 <!-- screenshot 02-codespace-menu.png: the Code → Codespaces menu with "Create codespace on main" -->
 <!-- screenshot 02-codespace-ready.png: VS Code in the browser, terminal showing the first bin/doctor output -->
 
+#### Connect to your Tutor
+
+Your operator — whoever is running your capstone course — hosts a Tutor
+that coaches you as you work. Connect your Codespace to it before you
+sign in your agents.
+
+1. Your operator sends you a link and three values.
+2. On GitHub, go to your fork's **Settings → Codespaces → Secrets** and
+   add `BB_MACHINE_SERVER_URL`, `BB_MACHINE_ACCESS_CLIENT_ID` and
+   `BB_MACHINE_ACCESS_CLIENT_SECRET`, each available to your fork.
+3. Create (or rebuild) your Codespace: see
+   [Create a Codespace](#create-a-codespace) above.
+4. In its terminal, sign in to an agent. For Claude Code, run `claude`
+   in the Codespace's terminal and follow its sign-in. Or see
+   [Sign in to the Codex extension](#sign-in-to-the-codex-extension) or
+   [Sign in to Pi](#sign-in-to-pi) below.
+5. Open your link and sign in with GitHub.
+
+<!-- screenshot 02-codespace-secrets.png: the Codespaces secrets page with the three values added -->
+
 #### Sign in to the Codex extension
 
 Open **Codex** from the sidebar and click **Sign in with ChatGPT**.
