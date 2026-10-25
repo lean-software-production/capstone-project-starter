@@ -323,7 +323,7 @@ requires the tools and at least one configured agent; `--agent pi`,
 contents or make a model request. For Pi, it uses `pi auth check --no-refresh`
 against a saved/uniquely identifiable provider; ambiguous Pi configuration is
 reported as unknown rather than ready. Once it reports ready, start Pi with `pi`,
-Claude Code with `claude`, or Codex with `codex`. Codex defaults to `gpt-6-sol`
+Claude Code with `claude`, or Codex with `codex`. Codex defaults to `gpt-6.1-sol`
 with Full Access permissions (no sandbox, no approval prompts); change these
 with `/model` and `/permissions`, or in `~/.codex/config.toml`. Full Access
 means Codex can run any command, including `git push` with the Codespace's
