@@ -5,7 +5,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "openai.chatgpt"
+        "openai.chatgpt@26.1007.21434"
       ]
     }
   },
