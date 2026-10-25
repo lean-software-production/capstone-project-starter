@@ -12,9 +12,9 @@ Fork it to start your capstone project.
 - **Your fork is your capstone project**, so name it for your capstone:
   a fork named `my-plant-feeder` builds a plant feeder.
 - **The homeworks grow a factory**: a program that turns a written spec
-  into working software by running coding agents. Over seven homeworks
+  into working software by running coding agents. Over eight homeworks
   it learns to automate (turn a seed into working software, one task at
-  a time), compose (explicit routes, machines, runs and targets) and
+  a time), compose (configured machines, explicit routes, runs and targets) and
   operate (parallel work you can watch live and steer).
 - **Your factory learns on Tetris first.** The homeworks build Tetris,
   in `tetris/`, as a practice target everyone shares. Your capstone
@@ -247,12 +247,15 @@ reports `Environment is ready`; then carry on from
 - `tetris/spec.md`: the practice seed, supplied with the first homework.
 - `tetris/tetris-001/`, `tetris/tetris-002/`: generated practice games, one
   folder per generation. Each keeps its own plan in `.factory/plan.md`
-  through homework 3. The factory commits only the selected target's
-  generated work and plan in this repository.
+  through homework 4. From homework 5 a target also holds the assembly
+  lines that build it, in `.assembly-lines/<line>/`, each with its
+  machines and its runs, and a run's plan and record live in its run's
+  folder there. The factory commits only the selected target's generated
+  work, and its run folders, in this repository.
 - Your capstone product: a separate folder later, such as `plant-feeder/`
   in a fork named `my-plant-feeder`.
 - `bin/doctor`, `bin/doctor_test.sh`: starter environment checks.
-- `tools/pi-rpc-acp/`: from homework 6 your factory runs machines as
+- `tools/pi-rpc-acp/`: from homework 7 your factory runs machines as
   ACP agents; this is the bridge that runs pi as one. The devcontainer
   puts it on your `PATH`, and installs the ACP adapters for Claude Code
   and Codex.
