@@ -14,7 +14,7 @@ seed="$root/tetris/spec.md"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
-curl -fsSL "https://codeload.github.com/lean-software-production/tutorial/tar.gz/$ref" \
+curl -fsSL "https://codeload.github.com/lean-software-production/build-a-software-factory-tutorial/tar.gz/$ref" \
   | tar -xz -C "$tmp" --strip-components=1
 
 # Ledger rows look like: | 001 | [Title](001-folder/README.md) |, and an

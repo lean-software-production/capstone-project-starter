@@ -1,16 +1,17 @@
-# capstone-project-starter
+# my-factory-starter
 
 Build a software factory. Start with one coding agent, and grow a
 system you can configure, observe and steer.
 
 This is the starter for the
-[Lean Software Production tutorial](https://lean-software-production.github.io/tutorial/slides/#/).
-Fork it to start your capstone project.
+[Build a Software Factory tutorial](https://github.com/lean-software-production/build-a-software-factory-tutorial).
+Fork it to start building your factory.
 
 ## What you're building
 
-- **Your fork is your capstone project**, so name it for your capstone:
-  a fork named `my-plant-feeder` builds a plant feeder.
+- **Your fork is your factory.** Keep its name, `my-factory-starter`,
+  or give it any name you like. Your capstone project comes later, in a
+  folder of its own inside your fork.
 - **The homeworks grow a factory**: a program that turns a written spec
   into working software by running coding agents. Over eight homeworks
   it learns to automate (turn a seed into working software, one task at
@@ -45,7 +46,6 @@ too.
       **Settings → Security** and turn on **Enable device code
       authorization for Codex**. On a Business or Team workspace, your
       workspace admin turns it on under **Permissions & Roles**.
-- [ ] A name for your capstone project.
 
 You don't need to install anything on your computer.
 
@@ -53,12 +53,11 @@ You don't need to install anything on your computer.
 
 ### 1. Fork the starter
 
-On GitHub, fork this repository. Set the fork's **Repository name** to
-your capstone's name.
+On GitHub, fork this repository. You can keep the name it suggests.
 
-**You should see** your fork at `github.com/<you>/<capstone-name>`.
+**You should see** your fork at `github.com/<you>/my-factory-starter`.
 
-<!-- screenshot 01-fork.png: the "Create a new fork" page with the repository name filled in -->
+<!-- screenshot 01-fork.png: the "Create a new fork" page -->
 
 ### 2. Open and check
 
@@ -156,7 +155,7 @@ First say:
 > fetch iteration
 
 It downloads Homework 1 from the
-[course](https://github.com/lean-software-production/tutorial) into
+[course](https://github.com/lean-software-production/build-a-software-factory-tutorial) into
 `factory/spec/` and commits it.
 
 **You should see** Codex report the homework it fetched. In the
@@ -221,8 +220,8 @@ container at all, with any coding agent harness (Pi, Claude Code,
 Codex, etc). Clone your fork and check it:
 
 ```sh
-git clone https://github.com/<you>/<capstone-name>.git
-cd <capstone-name>
+git clone https://github.com/<you>/my-factory-starter.git
+cd my-factory-starter
 bin/doctor
 ```
 
@@ -252,8 +251,7 @@ reports `Environment is ready`; then carry on from
   machines and its runs, and a run's plan and record live in its run's
   folder there. The factory commits only the selected target's generated
   work, and its run folders, in this repository.
-- Your capstone product: a separate folder later, such as `plant-feeder/`
-  in a fork named `my-plant-feeder`.
+- Your capstone product: a separate folder later, such as `plant-feeder/`.
 - `bin/doctor`, `bin/doctor_test.sh`: starter environment checks.
 - `tools/pi-rpc-acp/`: from homework 7 your factory runs machines as
   ACP agents; this is the bridge that runs pi as one. The devcontainer

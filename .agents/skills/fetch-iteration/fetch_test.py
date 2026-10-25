@@ -49,7 +49,7 @@ class FetchTest(unittest.TestCase):
 
     def pack(self):
         with tarfile.open(self.archive, "w:gz") as tar:
-            tar.add(self.base / "course", arcname="tutorial-main")
+            tar.add(self.base / "course", arcname="build-a-software-factory-tutorial-main")
 
     def fetch(self, cwd=None, success=True):
         result = subprocess.run(
@@ -66,7 +66,10 @@ class FetchTest(unittest.TestCase):
         self.assertTrue((self.root / "factory/spec/features/1.feature").is_file())
         self.assertFalse((self.root / "spec").exists())
         self.assertFalse((self.root / "ITERATION").exists())
-        self.assertIn("/test-root-layout", (self.base / "curl-args").read_text())
+        self.assertIn(
+            "lean-software-production/build-a-software-factory-tutorial/tar.gz/test-root-layout",
+            (self.base / "curl-args").read_text(),
+        )
 
     def test_fetch_from_generated_target_uses_factory_root(self):
         target = self.root / "tetris/tetris1"
