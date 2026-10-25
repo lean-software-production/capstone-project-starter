@@ -11,9 +11,10 @@ When maintaining the starter itself, work on the requested scaffolding,
 skills or tooling change; homework adoption is a separate student action.
 Course content is authored in the tutorial repository and fetched here.
 
-Students name their fork for their capstone project. Tetris is the shared
-practice target their factories build first, not their capstone. Explain
-that distinction when introducing the course to a student.
+A student's fork is their factory. Their capstone project comes later,
+in a folder of its own in the fork. Tetris is the shared practice target
+their factories build first, not their capstone. Explain that
+distinction when introducing the course to a student.
 
 - `factory/spec/` holds the current homework iteration, fetched from the course. Don't edit it. Its feature files are the factory's test suite.
 - `factory/ITERATION` holds the student's progress, e.g. `001 WIP`.
