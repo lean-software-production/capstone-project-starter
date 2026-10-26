@@ -14,6 +14,7 @@ Open the agent at the repository root. Paths below are relative to it. The line 
    - **The default model's provider isn't reachable:** run `pi auth check --provider openai-codex --no-refresh`. If it doesn't say `ready`, and there's no API key for that provider in the environment, find the provider the student is signed in to (the names in `auth.json`, or the provider of the API key they have). Show them the models from `pi --list-models <provider>`, and let them choose. Write `{"harness": "pi-rpc-acp", "model": "<provider>/<model>"}` as both `machine.json` files. Tell them the timing in the README was measured on the default model, so theirs may differ.
 4. Check, and stop at the first check that fails, saying what to do:
    - `bin/reference-factory --version` runs and prints `factory <version>`;
+   - `command -v pi-rpc-acp` finds the Pi bridge. A Codespace has it on `PATH`; elsewhere it may not. If it's missing, stop and say so: the student adds this repository's `tools/pi-rpc-acp` folder to `PATH` (the README's Other setups section), then asks again;
    - `pi auth check --provider <provider> --no-refresh` says `ready` for the provider both machines name (the part of `model` before the `/`), or that provider's API key is in the environment;
    - with a login, `auth.json` exists in both machines.
 5. Look at the run before you show any command. If `tetris/tetris-000/.assembly-lines/implement-with-ralph-loop/runs/tetris/` exists:
@@ -26,7 +27,7 @@ Open the agent at the repository root. Paths below are relative to it. The line 
    bin/reference-factory watch tetris --target tetris/tetris-000
    ```
 
-   Say the second shows the build live, and that it takes about 15 minutes. If a run stops with an error, such as "ended its turn having generated nothing", they type the same first command again and it carries on with the finished tasks kept. If it fails again within seconds of starting, check the Pi sign-in.
+   Say the second shows the build live, and that it takes about 20 minutes, longer if it stops and they start it again. A stop is likely: both real builds on this model stopped once, with an error such as "ended its turn having generated nothing". When a run stops, `watch` ends too ("run tetris failed: ..."), so they type **both** commands again, one after the other, and it carries on with the finished tasks kept. If it fails again within seconds of starting, they ask you again ("use the reference factory to build tetris-000"), and you copy the login and check it again (steps 3 and 4). Ctrl-C only stops the watching; the run carries on, and the second command picks it up again.
 
    When the run is complete, give them the play command:
 

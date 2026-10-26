@@ -31,10 +31,10 @@ Each homework follows the same loop:
 This guide gets you from nothing to your first homework, open and ready
 to work on. Getting set up takes about 15 minutes, most of it waiting
 for your Codespace to build. Before the first homework you also watch a
-finished factory build a Tetris, which takes about 15 minutes more. We walk through GitHub Codespaces, where you sign
-in two agents with your ChatGPT plan: the Codex extension, which coaches
-you, and Pi, which your factory runs. [Other setups](#other-setups) work
-too.
+finished factory build a Tetris, which takes about 20 minutes more. We
+walk through GitHub Codespaces, where you sign in two agents with your
+ChatGPT plan: the Codex extension, which coaches you, and Pi, which your
+factory runs. [Other setups](#other-setups) work too.
 
 ## Before you begin
 
@@ -166,6 +166,12 @@ environment, it copies nothing. The machines use `openai-codex/gpt-6.1-sol`.
 If you're signed in to a different provider, your agent offers you a
 model of that provider to use instead.
 
+The reference factory has builds for Linux (x86-64 and arm64) and for
+Macs with Apple silicon. On an Intel Mac, your agent says there's no
+build for your machine. That's fine: skip to
+[step 5](#5-fetch-homework-1), and you'll build your own factory
+without watching the reference one first.
+
 **You should see** your agent give you two commands to type.
 
 Type them in a terminal at the repository root. The first starts the
@@ -176,10 +182,11 @@ bin/reference-factory --run tetris --target tetris/tetris-000 --line implement-w
 bin/reference-factory watch tetris --target tetris/tetris-000
 ```
 
-It takes about 15 minutes. The planner writes a plan, then `ralph` does
-one task at a time, and the planner checks the plan again after each.
-Leave the terminal open; you can close it with Ctrl-C, and the run
-carries on without it.
+It takes about 20 minutes, longer if it stops and you start it again.
+The planner writes a plan, then `ralph` does one task at a time, and the
+planner checks the plan again after each. Leave the terminal open. If
+you press Ctrl-C, you stop watching but the run carries on; type the
+second command again to pick the view back up.
 
 **You should see** the machines' work scroll by, above a status bar of
 three rows that stays at the bottom:
@@ -195,10 +202,14 @@ line the work follows and the round. The third has the time and the
 tokens used. When the run finishes, the terminal says
 `run tetris finished` with the time, and gives you the prompt back.
 
-If a run stops with an error, such as "ended its turn having generated
-nothing", type the same first command again. It carries on with the
-finished tasks kept. If it fails again within seconds of starting,
-check your Pi sign-in with `bin/doctor`.
+A stop is likely: both of the builds we timed on this model stopped
+once with an error, such as "ended its turn having generated nothing".
+When a run stops, `watch` ends too, printing "run tetris failed" and
+the error. Type **both** commands again, one after the other. The run
+carries on with the finished tasks kept. If it fails again within
+seconds of starting, ask your coding agent again ("use the reference
+factory to build tetris-000"): it copies your Pi login into the
+machines again and checks it.
 
 Then play the Tetris it built:
 
@@ -300,8 +311,12 @@ bin/doctor
 If anything is missing, ask your agent to set up an environment
 equivalent to this repository's Codespace, described in
 `.devcontainer/devcontainer.json`. Sign in to Pi too (`pi`, then
-`/login`), because your factory runs it. You're ready when `bin/doctor`
-reports `Environment is ready`; then carry on from
+`/login`), because your factory runs it. The reference factory also
+needs the Pi bridge on your `PATH`; a Codespace has it, but elsewhere
+you add this repository's `tools/pi-rpc-acp` folder to `PATH` (for
+example, put `export PATH="/path/to/my-factory-starter/tools/pi-rpc-acp:$PATH"`
+in your shell's startup file). You're ready when `bin/doctor` reports
+`Environment is ready`; then carry on from
 [step 3](#3-start-your-coding-agent), starting your agent (`pi`,
 `claude` or `codex`) at the repository root.
 
