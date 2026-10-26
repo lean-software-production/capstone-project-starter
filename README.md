@@ -29,11 +29,12 @@ Each homework follows the same loop:
 3. **Repeat**: fetch again. Your step definitions carry forward.
 
 This guide gets you from nothing to your first homework, open and ready
-to work on. It takes about 15 minutes, most of it waiting for your
-Codespace to build. We walk through GitHub Codespaces, where you sign
-in two agents with your ChatGPT plan: the Codex extension, which coaches
-you, and Pi, which your factory runs. [Other setups](#other-setups) work
-too.
+to work on. Getting set up takes about 15 minutes, most of it waiting
+for your Codespace to build. Before the first homework you also watch a
+finished factory build a Tetris, which takes about 20 minutes more. We
+walk through GitHub Codespaces, where you sign in two agents with your
+ChatGPT plan: the Codex extension, which coaches you, and Pi, which your
+factory runs. [Other setups](#other-setups) work too.
 
 ## Before you begin
 
@@ -145,7 +146,94 @@ or in `~/.codex/config.toml`, if you'd rather approve each one.
 
 <!-- screenshot 03-codex-panel.png: the Codex chat panel open beside the editor -->
 
-### 4. Fetch Homework 1
+### 4. Build tetris-000 with the reference factory
+
+Before you build a factory, watch a finished one work. The course has a
+reference factory: you give it a seed, and it builds a Tetris in
+`tetris/tetris-000`. Your own factory will answer to the same commands
+by the end of the homeworks. Your coding agent gets it ready, and you
+type the commands.
+
+Say, in the Codex chat panel:
+
+> coach me
+
+Before your first homework, your agent offers to build `tetris-000` with
+the reference factory. Say yes. If you'd rather skip it and start
+homework 1 straight away, say so, and go to
+[step 5](#5-fetch-homework-1). You can also ask for it directly at any
+time: "use the reference factory to build tetris-000".
+
+Your agent downloads the reference factory into `bin/reference-factory`,
+checks it, and makes sure it can use your Pi sign-in. If you signed in
+to Pi with a login, it copies that login into the factory's two
+machines, `planner` and `ralph`; if you use an API key from the
+environment, it copies nothing. The machines use `openai-codex/gpt-6.1-sol`.
+If you're signed in to a different provider, your agent offers you a
+model of that provider to use instead.
+
+The reference factory has builds for Linux (x86-64 and arm64) and for
+Macs with Apple silicon. On an Intel Mac, your agent says there's no
+build for your machine. That's fine: skip to
+[step 5](#5-fetch-homework-1), and you'll build your own factory
+without watching the reference one first.
+
+**You should see** your agent give you two commands to type.
+
+Type them in a terminal at the repository root. The first starts the
+run; the second shows it live:
+
+```sh
+bin/reference-factory --run tetris --target tetris/tetris-000 --line implement-with-ralph-loop --seed tetris/spec.md
+bin/reference-factory watch tetris --target tetris/tetris-000
+```
+
+It takes about 20 minutes, longer if it stops and you start it again.
+The planner writes a plan, then `ralph` does one task at a time, and the
+planner checks the plan again after each. Leave the terminal open. If
+you press Ctrl-C, you stop watching but the run carries on; type the
+second command again to pick the view back up.
+
+**You should see** the machines' work scroll by, above a status bar of
+three rows that stays at the bottom:
+
+```text
+tetris on implement-with-ralph-loop · tetris/tetris-000
+start ▸ planner ▸ ralph ↺ planner                        round 3
+3m 15s · planner 18.9k · ralph 16.7k · run 35.6k tokens
+```
+
+The first row names the run and where it builds. The second shows the
+line the work follows and the round. The third has the time and the
+tokens used. When the run finishes, the terminal says
+`run tetris finished` with the time, and gives you the prompt back.
+
+A stop is likely: both of the builds we timed on this model stopped
+once with an error, such as "ended its turn having generated nothing".
+When a run stops, `watch` ends too, printing "run tetris failed" and
+the error. Type **both** commands again, one after the other. The run
+carries on with the finished tasks kept. If it fails again within
+seconds of starting, ask your coding agent again ("use the reference
+factory to build tetris-000"): it copies your Pi login into the
+machines again and checks it.
+
+Then play the Tetris it built:
+
+```sh
+npm --prefix tetris/tetris-000 start
+```
+
+**You should see** a Tetris in your terminal. Press Q to quit.
+
+If you ask your agent to do this again after `tetris-000` is built, it
+tells you it's built and gives you the play command. If a run was
+interrupted, it tells you to type the same two commands to carry on.
+
+<!-- screenshot 04-reference-factory-commands.png: Codex giving the two commands -->
+<!-- screenshot 04-watch.png: the watch view with its three-row status bar -->
+<!-- screenshot 04-play.png: the Tetris running in the terminal -->
+
+### 5. Fetch Homework 1
 
 Now talk to your coding agent. These are messages in the Codex chat
 panel, not shell commands.
@@ -171,8 +259,8 @@ prints:
 001 WIP
 ```
 
-<!-- screenshot 04-fetch-iteration.png: Codex reporting the fetched homework -->
-<!-- screenshot 04-iteration.png: cat factory/ITERATION printing 001 WIP -->
+<!-- screenshot 05-fetch-iteration.png: Codex reporting the fetched homework -->
+<!-- screenshot 05-iteration.png: cat factory/ITERATION printing 001 WIP -->
 
 Then say:
 
@@ -185,12 +273,13 @@ Gherkin runner, so the homework's feature files run as your tests.
 **You should see** Codex summarise Homework 1 and ask which language
 you'd like to build your factory in.
 
-<!-- screenshot 04-coach-me.png: Codex starting to coach Homework 1 -->
+<!-- screenshot 05-coach-me.png: Codex starting to coach Homework 1 -->
 
 ## You're set up when
 
 - [ ] `bin/doctor --agent codex` reports Pi and Codex signed in, and
       `Environment is ready for codex.`
+- [ ] You've built `tetris/tetris-000` with the reference factory and played it, or chosen to skip it.
 - [ ] `factory/ITERATION` reads `001 WIP`.
 - [ ] `factory/spec/README.md` exists, holding Homework 1.
 - [ ] Codex is coaching you through it.
@@ -228,8 +317,12 @@ bin/doctor
 If anything is missing, ask your agent to set up an environment
 equivalent to this repository's Codespace, described in
 `.devcontainer/devcontainer.json`. Sign in to Pi too (`pi`, then
-`/login`), because your factory runs it. You're ready when `bin/doctor`
-reports `Environment is ready`; then carry on from
+`/login`), because your factory runs it. The reference factory also
+needs the Pi bridge on your `PATH`; a Codespace has it, but elsewhere
+you add this repository's `tools/pi-rpc-acp` folder to `PATH` (for
+example, put `export PATH="/path/to/my-factory-starter/tools/pi-rpc-acp:$PATH"`
+in your shell's startup file). You're ready when `bin/doctor` reports
+`Environment is ready`; then carry on from
 [step 3](#3-start-your-coding-agent), starting your agent (`pi`,
 `claude` or `codex`) at the repository root.
 
@@ -243,7 +336,12 @@ reports `Environment is ready`; then carry on from
   - `ITERATION`: which homework you're on, and whether it's done.
 - `bin/factory`: a symlink to your factory's entry point, created during
   setup after you choose a language. Run it from the repository root.
-- `tetris/spec.md`: the practice seed, supplied with the first homework.
+- `tetris/spec.md`: the practice seed. It ships with the starter, and
+  the first homework supplies the same text.
+- `tetris/tetris-000/`: the Tetris the reference factory builds in
+  step 4. Before it's built it holds only the `implement-with-ralph-loop`
+  line, in `.assembly-lines/`. The factory commits what it builds, and
+  its run folder, in this repository.
 - `tetris/tetris-001/`, `tetris/tetris-002/`: generated practice games, one
   folder per generation. Each keeps its own plan in `.factory/plan.md`
   through homework 4. From homework 5 a target also holds the assembly
@@ -253,11 +351,16 @@ reports `Environment is ready`; then carry on from
   work, and its run folders, in this repository.
 - Your capstone product: a separate folder later, such as `plant-feeder/`.
 - `bin/doctor`, `bin/doctor_test.sh`: starter environment checks.
+- `bin/get-reference-factory`, `bin/get-reference-factory_test.sh`:
+  download the course's reference factory release, check it and install
+  it as `bin/reference-factory`; and the script's tests.
+- `bin/reference-factory`: the reference factory, installed by
+  `bin/get-reference-factory`. Git ignores it.
 - `tools/pi-rpc-acp/`: from homework 7 your factory runs machines as
   ACP agents; this is the bridge that runs pi as one. The devcontainer
   puts it on your `PATH`, and installs the ACP adapters for Claude Code
   and Codex.
-- `.agents/skills/`: the skills `fetch-iteration`,
+- `.agents/skills/`: the skills `use-reference-factory`, `fetch-iteration`,
   `set-up-factory`, `coach-me`, `implement-it` and `implement-fast`.
 
 ### Run your first factory
@@ -332,6 +435,10 @@ GitHub token, without asking.
 ### Testing the starter
 
 Run `bin/doctor_test.sh` to exercise `bin/doctor` against fake agent CLIs.
+
+Run `bin/get-reference-factory_test.sh` to exercise
+`bin/get-reference-factory` against a fake release in a scratch folder. It
+never touches your `bin/reference-factory`.
 
 Run `python3 .agents/skills/fetch-iteration/fetch_test.py` to check fetching
 without network access.

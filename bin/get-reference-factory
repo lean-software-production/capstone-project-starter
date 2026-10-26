@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Downloads the reference factory release this course uses and installs it
+# as bin/reference-factory. Run it from anywhere:
+#
+#   bin/get-reference-factory
+#
+# It picks the build for this machine, checks it against the release's
+# SHA256SUMS, and installs it only if the sum matches. If the right version
+# is already installed it does nothing. To move the course to a new release,
+# change the version below.
+#
+# REFERENCE_FACTORY_URL replaces the release's base URL, for example
+# file:///path/to/dist/<version> to try a build that isn't published yet.
+set -euo pipefail
+
+version=2026.10.26.2
+
+base_url="${REFERENCE_FACTORY_URL:-https://github.com/lean-software-production/my-factory-starter/releases/download/$version}"
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+target="$bin_dir/reference-factory"
+
+if [[ -x "$target" && "$("$target" --version 2>/dev/null || true)" == "factory $version" ]]; then
+  echo "bin/reference-factory is already factory $version; nothing to download."
+  exit 0
+fi
+
+os=$(uname -s)
+machine=$(uname -m)
+case "$os $machine" in
+  "Linux x86_64") platform=linux-amd64 ;;
+  "Linux aarch64" | "Linux arm64") platform=linux-arm64 ;;
+  "Darwin arm64") platform=darwin-arm64 ;;
+  *)
+    echo "No reference factory build for $os $machine." >&2
+    echo "The supported builds are linux-amd64, linux-arm64, darwin-arm64." >&2
+    exit 1
+    ;;
+esac
+asset="factory-$version-$platform"
+
+if command -v sha256sum >/dev/null 2>&1; then
+  sha256() { sha256sum "$1" | cut -d' ' -f1; }
+elif command -v shasum >/dev/null 2>&1; then
+  sha256() { shasum -a 256 "$1" | cut -d' ' -f1; }
+else
+  echo "Need sha256sum or shasum to check the download." >&2
+  exit 1
+fi
+
+tmp=$(mktemp -d)
+staged="$bin_dir/.reference-factory.$$"
+trap 'rm -rf "$tmp" "$staged"' EXIT
+
+echo "Downloading $asset from $base_url"
+curl -fsSL "$base_url/$asset" -o "$tmp/$asset" || { echo "Could not download $base_url/$asset" >&2; exit 1; }
+curl -fsSL "$base_url/SHA256SUMS" -o "$tmp/SHA256SUMS" || { echo "Could not download $base_url/SHA256SUMS" >&2; exit 1; }
+
+expected=$(awk -v name="$asset" '$2 == name || $2 == "*" name { print $1 }' "$tmp/SHA256SUMS")
+actual=$(sha256 "$tmp/$asset")
+if [[ -z "$expected" || "$expected" != "$actual" ]]; then
+  echo "Checksum mismatch for $asset: expected ${expected:-no entry in SHA256SUMS}, got $actual." >&2
+  echo "Nothing was installed." >&2
+  exit 1
+fi
+
+# Stage next to the target so the final move is a rename, never a partial file.
+cp "$tmp/$asset" "$staged"
+chmod +x "$staged"
+
+# An older factory may still have a daemon answering to this path. Stop it
+# before it is replaced, or it would keep answering. A failure doesn't matter.
+if [[ -x "$target" ]]; then
+  "$target" stop >/dev/null 2>&1 || true
+fi
+mv -f "$staged" "$target"
+
+if [[ "$platform" == *arm64 ]]; then
+  echo "Note: the $platform build has not been tried yet. If it misbehaves, tell your instructor."
+fi
+echo "Installed bin/reference-factory ($platform). Checking it:"
+"$target" --version
