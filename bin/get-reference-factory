@@ -66,6 +66,12 @@ fi
 # Stage next to the target so the final move is a rename, never a partial file.
 cp "$tmp/$asset" "$staged"
 chmod +x "$staged"
+
+# An older factory may still have a daemon answering to this path. Stop it
+# before it is replaced, or it would keep answering. A failure doesn't matter.
+if [[ -x "$target" ]]; then
+  "$target" stop >/dev/null 2>&1 || true
+fi
 mv -f "$staged" "$target"
 
 if [[ "$platform" == *arm64 ]]; then

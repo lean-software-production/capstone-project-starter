@@ -75,6 +75,38 @@ get >/dev/null || fail 'expected the update to succeed'
 [[ "$("$work/bin/reference-factory" --version)" == "factory $version" ]] ||
   fail 'expected the older binary to be replaced'
 
+# an older binary is stopped before it is replaced
+fresh_install_dir
+cat >"$work/bin/reference-factory" <<FAKE
+#!/usr/bin/env bash
+case "\${1-}" in
+  --version) echo "factory 2000.01.01" ;;
+  stop) echo stopped >"$scratch/stop-called"; exit 1 ;;
+esac
+FAKE
+chmod +x "$work/bin/reference-factory"
+rm -f "$scratch/stop-called"
+serve "$version"
+get >/dev/null || fail 'expected the update to succeed even when stop fails'
+[[ -f "$scratch/stop-called" ]] || fail 'expected the older binary to be told to stop before it was replaced'
+[[ "$("$work/bin/reference-factory" --version)" == "factory $version" ]] ||
+  fail 'expected the older binary to be replaced'
+
+# a mismatch does not stop the older binary
+fresh_install_dir
+cat >"$work/bin/reference-factory" <<FAKE
+#!/usr/bin/env bash
+case "\${1-}" in
+  --version) echo "factory 2000.01.01" ;;
+  stop) echo stopped >"$scratch/stop-called" ;;
+esac
+FAKE
+chmod +x "$work/bin/reference-factory"
+rm -f "$scratch/stop-called"
+serve "$version" 0000000000000000000000000000000000000000000000000000000000000000
+if get >/dev/null 2>&1; then fail 'expected a checksum mismatch to fail'; fi
+[[ ! -f "$scratch/stop-called" ]] || fail 'expected a failed download to leave the older binary running'
+
 # a checksum mismatch installs nothing
 fresh_install_dir
 serve "$version" 0000000000000000000000000000000000000000000000000000000000000000
