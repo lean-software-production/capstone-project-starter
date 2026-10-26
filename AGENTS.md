@@ -21,6 +21,7 @@ distinction when introducing the course to a student.
 
 Skills, in `.agents/skills/` at the repository's root:
 
+- **use-reference-factory** — when the student says "use the reference factory to build tetris-000", or asks to use or try the reference factory. It comes before the first fetch.
 - **fetch-iteration** — when the student says "fetch iteration", or there is no iteration in progress.
 - **set-up-factory** — when there is no factory project yet: sets up a Gherkin runner for `factory/spec/features/` in the student's language.
 - **coach-me** — when the student says "coach me", asks to be coached, or wants to work through their homework with guidance.
