@@ -156,7 +156,13 @@ type the commands.
 
 Say, in the Codex chat panel:
 
-> use the reference factory to build tetris-000
+> coach me
+
+Before your first homework, your agent offers to build `tetris-000` with
+the reference factory. Say yes. If you'd rather skip it and start
+homework 1 straight away, say so, and go to
+[step 5](#5-fetch-homework-1). You can also ask for it directly at any
+time: "use the reference factory to build tetris-000".
 
 Your agent downloads the reference factory into `bin/reference-factory`,
 checks it, and makes sure it can use your Pi sign-in. If you signed in
@@ -273,7 +279,7 @@ you'd like to build your factory in.
 
 - [ ] `bin/doctor --agent codex` reports Pi and Codex signed in, and
       `Environment is ready for codex.`
-- [ ] You've built `tetris/tetris-000` with the reference factory and played it.
+- [ ] You've built `tetris/tetris-000` with the reference factory and played it, or chosen to skip it.
 - [ ] `factory/ITERATION` reads `001 WIP`.
 - [ ] `factory/spec/README.md` exists, holding Homework 1.
 - [ ] Codex is coaching you through it.

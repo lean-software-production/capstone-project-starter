@@ -1,6 +1,6 @@
 ---
 name: coach-me
-description: Walk the student through their next homework iteration. Use when the student says "coach me", asks to be coached, or wants to work through their next homework with guidance.
+description: Walk the student through their next homework iteration. Use when the student says "coach me", asks to be coached, or wants to work through their next homework with guidance. Before the first homework, it offers to build tetris-000 with the reference factory, which the student can skip.
 ---
 Walk the student through implementing their next homework iteration.
 
@@ -16,6 +16,16 @@ Open the agent at the repository root. The factory source, `spec/` and `ITERATIO
 - `tetris/spec.md` (from the repository root) — the practice seed passed with `--seed`.
 - **The step definitions** — the student's, in their factory project. They tie the feature files to the factory, and make the machines in each example do what it says, with test doubles the student writes (homework 1's README explains).
 - **The codebase** — the folder passed with `--target`, such as `tetris/tetris1/` or `tetris/tetris2/` (from the repository root). The factory builds the game there; you don't. The current feature specs define target behavior and where plans and other state live.
+
+## Before the first homework: tetris-000
+
+Only when `ITERATION` doesn't exist yet, so the student hasn't started homework 1, check `tetris/tetris-000` (from the repository root) before the process below. It is built when `tetris/tetris-000/.assembly-lines/implement-with-ralph-loop/runs/tetris/record.jsonl` exists and its last line is the run finished (`"kind":"run"`, `"state":"finished"`).
+
+- If it is built, go on to the process below.
+- If its run has started but isn't finished, say so: they can carry on with it (follow the use-reference-factory skill, which gives the same two commands to resume it) or skip it and start homework 1 now.
+- If it hasn't been started, offer to build it first: they'd watch the finished reference factory build a Tetris, typing two commands, in about 20 minutes. Or they can skip it and start homework 1 now.
+  - If they want it, follow the use-reference-factory skill and stop there. When they say "coach me" again, after playing it, this check finds it built.
+  - If they'd rather skip it, go on to the process below. Fetching homework 1 creates `ITERATION`, so you won't offer again.
 
 ## Coaching
 

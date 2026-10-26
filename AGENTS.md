@@ -24,7 +24,7 @@ Skills, in `.agents/skills/` at the repository's root:
 - **use-reference-factory** — when the student says "use the reference factory to build tetris-000", or asks to use or try the reference factory. It comes before the first fetch.
 - **fetch-iteration** — when the student says "fetch iteration", or there is no iteration in progress.
 - **set-up-factory** — when there is no factory project yet: sets up a Gherkin runner for `factory/spec/features/` in the student's language.
-- **coach-me** — when the student says "coach me", asks to be coached, or wants to work through their homework with guidance.
+- **coach-me** — when the student says "coach me", asks to be coached, or wants to work through their homework with guidance. Before the first homework it offers tetris-000 (use-reference-factory), and the student can skip it.
 - **implement-it** — when the student wants you to build the iteration and demo it.
 - **implement-fast** — when the student wants you to just build the iteration.
 
