@@ -1,0 +1,6 @@
+digraph assembly_line {
+  start -> planner
+  planner -> ralph       [label="not complete"]
+  planner -> finish      [label="complete"]
+  ralph -> planner
+}
