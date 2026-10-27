@@ -13,7 +13,7 @@
 # file:///path/to/dist/<version> to try a build that isn't published yet.
 set -euo pipefail
 
-version=2026.10.26.2
+version=2026.10.27
 
 base_url="${REFERENCE_FACTORY_URL:-https://github.com/lean-software-production/my-factory-starter/releases/download/$version}"
 bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
